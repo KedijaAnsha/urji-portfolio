@@ -7,57 +7,51 @@ document.addEventListener('DOMContentLoaded', function() {
         navLinks.classList.toggle('active');
     });
     
-    // Close mobile menu when clicking a link
-    const navItems = document.querySelectorAll('.nav-links ul li a');
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
-                navLinks.classList.remove('active');
-            }
-        });
-    });
-    
-    // Smooth scrolling for anchor links
+    // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
+            navLinks.classList.remove('active');
             
+            const targetId = this.getAttribute('href');
             const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                const headerHeight = document.querySelector('header').offsetHeight;
-                const targetPosition = targetElement.offsetTop - headerHeight;
-                
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
+            
+            window.scrollTo({
+                top: targetElement.offsetTop - 80,
+                behavior: 'smooth'
+            });
         });
     });
     
-    // Scroll reveal animation
-    const fadeElements = document.querySelectorAll('.fade-in');
+    // Animate skill bars on scroll
+    const skillBars = document.querySelectorAll('.skill-level');
     
-    function checkScroll() {
-        fadeElements.forEach(element => {
-            const elementTop = element.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
-            
-            if (elementTop < windowHeight - 100) {
-                element.style.opacity = '1';
-                element.style.transform = 'translateY(0)';
+    function animateSkillBars() {
+        skillBars.forEach(bar => {
+            const level = bar.getAttribute('data-level');
+            if (isElementInViewport(bar) && !bar.classList.contains('animated')) {
+                bar.style.width = level;
+                bar.classList.add('animated');
             }
         });
     }
     
+    function isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+    
     // Initial check
-    checkScroll();
+    animateSkillBars();
     
     // Check on scroll
-    window.addEventListener('scroll', checkScroll);
+    window.addEventListener('scroll', animateSkillBars);
     
     // Form submission
     const contactForm = document.querySelector('.contact-form');
@@ -65,19 +59,43 @@ document.addEventListener('DOMContentLoaded', function() {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Get form values
-            const name = this.querySelector('#name').value;
-            const email = this.querySelector('#email').value;
-            const message = this.querySelector('#message').value;
-            
             // Here you would typically send the form data to a server
-            console.log('Form submitted:', { name, email, message });
-            
-            // Show success message
+            // For this example, we'll just show an alert
             alert('Thank you for your message! I will get back to you soon.');
-            
-            // Reset form
             this.reset();
         });
     }
+    
+    // Add animation to sections when they come into view
+    const sections = document.querySelectorAll('section');
+    
+    function checkSectionVisibility() {
+        sections.forEach(section => {
+            const sectionTop = section.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            
+            if (sectionTop < windowHeight - 100) {
+                section.classList.add('fade-in');
+            }
+        });
+    }
+    
+    // Initial check
+    checkSectionVisibility();
+    
+    // Check on scroll
+    window.addEventListener('scroll', checkSectionVisibility);
+    
+    // Header scroll effect
+    const header = document.querySelector('header');
+    
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 100) {
+            header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            header.style.background = 'rgba(255, 255, 255, 0.98)';
+        } else {
+            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            header.style.background = 'var(--white-color)';
+        }
+    });
 });
